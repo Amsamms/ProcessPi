@@ -345,3 +345,13 @@ def test_an_exchanger_designs_with_a_mixture_stream():
     assert hot["k_W_mK"] == pytest.approx(_value(at_mean.thermal_conductivity()), rel=1e-6)
     # Q = m cp dT on the hot side.
     assert _value(data["Q"].to("W")) == pytest.approx(7600 / 3600 * hot["cp_J_kgK"] * 45.0, rel=1e-9)
+
+
+def test_a_mixture_of_supercritical_components_is_a_gas():
+    # Methane and nitrogen are both above their critical temperatures at 300 K:
+    # no vapour pressure, so the dew-point sum was 1/0 (ZeroDivisionError).
+    from processpi.components import Methane, Nitrogen
+
+    mix = Mixture({Methane: 0.5, Nitrogen: 0.5}, temperature=Temperature(300, "K"), pressure=Pressure(1, "atm"))
+    assert mix.dew_pressure().value == float("inf")
+    assert mix.phase() == "gas"

@@ -347,7 +347,9 @@ class Mixture(Component):
 
     def dew_pressure(self) -> Pressure:
         """Pressure at which the vapour starts to condense: 1/P = sum y_i / Psat_i."""
-        return Pressure(1.0 / sum(y / self._psat(n) for n, y in self._mole_fractions.items()), "Pa")
+        inverse = sum(y / self._psat(n) for n, y in self._mole_fractions.items())
+        # Every component above its critical temperature: no pressure condenses it.
+        return Pressure(1.0 / inverse if inverse > 0 else float("inf"), "Pa")
 
     @PropertyMethod
     def vapor_pressure(self) -> Pressure:
