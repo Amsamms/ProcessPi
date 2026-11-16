@@ -79,7 +79,7 @@ class MaterialStream:
             # Pull props if available
             self.density = density or getattr(component,"density", None)()
             self.specific_heat = specific_heat or getattr(component,"specific_heat", None)()
-            self.molecular_weights = molecular_weights or {component.name: getattr(component, "mw", None)}
+            self.molecular_weights = molecular_weights or {component.name: getattr(component, "molecular_weight", None)}
             self.components = {component.name: 1.0}
         else:
             # --------------------

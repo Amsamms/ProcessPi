@@ -184,3 +184,15 @@ def test_double_pipe_cold_outlet_comes_from_the_balance():
     assert tc_out - 273.15 == pytest.approx(40.0, abs=0.2)
     dt1, dt2 = 353.15 - tc_out, 323.15 - 293.15
     assert _value(data["LMTD"]) == pytest.approx((dt1 - dt2) / math.log(dt1 / dt2), rel=1e-9)
+
+
+def test_a_component_stream_has_a_molar_flow():
+    # The stream took the molecular weight from a "mw" attribute no component
+    # has, stored None, and molar_flow() raised TypeError.
+    from processpi.components import Water
+    from processpi.streams import MaterialStream
+    from processpi.units import MassFlowRate
+
+    s = MaterialStream("w", component=Water(), mass_flow=MassFlowRate(1, "kg/s"))
+    assert s.molecular_weights == {"Water": Water.molecular_weight}
+    assert s.molar_flow().value == pytest.approx(1000 / Water.molecular_weight)
